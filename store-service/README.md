@@ -35,6 +35,36 @@ curl -s -H "X-Trace-Id: demo-123" http://localhost:8081/products
 curl -s -H "X-Trace-Id: demo-123" http://localhost:8081/stock/ABC-001
 ```
 
+## Sincronización tienda → central
+
+- Endpoint manual: `POST /sync/push` envía al central los cambios locales acumulados (outbox `change_log`).
+- Scheduler: cada 15 minutos (configurable) intenta push automático si `store.sync.enabled=true`.
+- Propiedades relevantes en `application.yml`:
+```
+store:
+  sync:
+    centralBaseUrl: http://localhost:8080
+    enabled: true
+    fixedDelayMs: 900000
+    maxRetries: 3
+    initialBackoffMs: 200
+```
+
+### Ejemplos (PowerShell)
+```powershell
+# Generar cambios
+Invoke-RestMethod -Uri http://localhost:8081/stock/adjust -Method Post -ContentType "application/json" -Body '{"productId":"ABC-001","delta":5}'
+
+# Disparar push manual
+Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
+
+# Sin items (no-op)
+Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
+
+# Simular red caída (apagar central) → espera 503 tras reintentos
+Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
+```
+
 ## Iteración 2 - Escrituras y concurrencia local
 
 - Endpoint: `POST /stock/adjust` aplica un `delta` (+/-) al stock de un producto y devuelve `StockSnapshotDTO`.

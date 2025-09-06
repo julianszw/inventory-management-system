@@ -34,6 +34,11 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request, "INTERNAL");
 	}
 
+	@ExceptionHandler(SyncNetworkException.class)
+	public ResponseEntity<Map<String, Object>> handleSyncNetwork(SyncNetworkException ex, HttpServletRequest request) {
+		return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request, "SERVICE_UNAVAILABLE");
+	}
+
 	private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, HttpServletRequest request, String code) {
 		String traceId = MDC.get("traceId");
 		Map<String, Object> body = Map.of(

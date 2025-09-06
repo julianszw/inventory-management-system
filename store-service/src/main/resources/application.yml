@@ -21,3 +21,11 @@ logging:
     root: INFO
     org.hibernate.SQL: WARN
 
+store:
+  sync:
+    centralBaseUrl: http://localhost:8080
+    enabled: true
+    fixedDelayMs: 900000
+    maxRetries: 3
+    initialBackoffMs: 200
+
