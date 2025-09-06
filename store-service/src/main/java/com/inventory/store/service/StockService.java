@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.Clock;
 import java.util.UUID;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 
 @Service
 public class StockService {
@@ -26,11 +29,21 @@ public class StockService {
 	private final StockRepository stockRepository;
 	private final ChangeLogRepository changeLogRepository;
 	private final Clock clock;
+	private final MeterRegistry meterRegistry;
+	private final Counter adjustAttempts;
+	private final Counter adjustSuccess;
+	private final Counter adjustFailed;
+	private final Timer adjustTimer;
 
-	public StockService(StockRepository stockRepository, ChangeLogRepository changeLogRepository, Clock clock) {
+	public StockService(StockRepository stockRepository, ChangeLogRepository changeLogRepository, Clock clock, MeterRegistry meterRegistry) {
 		this.stockRepository = stockRepository;
 		this.changeLogRepository = changeLogRepository;
 		this.clock = clock;
+		this.meterRegistry = meterRegistry;
+		this.adjustAttempts = Counter.builder("inventory_stock_adjust_attempts_total").register(meterRegistry);
+		this.adjustSuccess = Counter.builder("inventory_stock_adjust_success_total").register(meterRegistry);
+		this.adjustFailed = Counter.builder("inventory_stock_adjust_failed_total").register(meterRegistry);
+		this.adjustTimer = Timer.builder("inventory_stock_adjust_duration_seconds").publishPercentileHistogram(true).register(meterRegistry);
 	}
 
 	public StockSnapshotDTO getSnapshot(String productId) {
@@ -49,14 +62,21 @@ public class StockService {
 	public StockSnapshotDTO adjust(String productId, int delta) {
 		String traceId = MDC.get("traceId");
 		log.info("[traceId={}] Ajuste de stock iniciado: productId={}, delta={}", traceId, productId, delta);
+		adjustAttempts.increment();
+		Timer.Sample sample = Timer.start(meterRegistry);
 
 		int maxAttempts = 3;
 		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
 			try {
-				return doAdjust(productId, delta);
+				StockSnapshotDTO result = doAdjust(productId, delta);
+				adjustSuccess.increment();
+				sample.stop(adjustTimer);
+				return result;
 			} catch (OptimisticLockException | ObjectOptimisticLockingFailureException ole) {
 				if (attempt == maxAttempts) {
 					log.error("[traceId={}] Error de concurrencia tras {} intentos", traceId, attempt);
+					adjustFailed.increment();
+					sample.stop(adjustTimer);
 					throw new RuntimeException("No se pudo completar el ajuste por concurrencia. Intente nuevamente.", ole);
 				}
 				try {

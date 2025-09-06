@@ -50,4 +50,10 @@ Response:
 ### Próxima iteración
 Se añadirá `/sync/push` y un scheduler en store-service para enviar periódicamente cambios.
 
+## Métricas
+- Principales:
+  - inventory_sync_pull_received_total | applied_total | skipped_total | duration_seconds
+- Actuator:
+  - /actuator/health, /actuator/metrics, /actuator/metrics/{metric}, /actuator/prometheus
+
 

@@ -65,6 +65,13 @@ Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
 Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
 ```
 
+## Métricas
+- Principales:
+  - inventory_stock_adjust_attempts_total | success_total | failed_total | duration_seconds
+  - inventory_sync_push_attempts_total | success_total | failed_total | items_applied_total | items_skipped_total | duration_seconds
+- Actuator:
+  - /actuator/health, /actuator/metrics, /actuator/metrics/{metric}, /actuator/prometheus
+
 ## Iteración 2 - Escrituras y concurrencia local
 
 - Endpoint: `POST /stock/adjust` aplica un `delta` (+/-) al stock de un producto y devuelve `StockSnapshotDTO`.

@@ -14,8 +14,10 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.*;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 
 @Service
 public class SyncPushService {
@@ -28,16 +30,32 @@ public class SyncPushService {
     private final int maxRetries;
     private final long initialBackoffMs;
 
+    private final MeterRegistry meterRegistry;
+    private final Counter pushAttempts;
+    private final Counter pushSuccess;
+    private final Counter pushFailed;
+    private final Counter pushItemsApplied;
+    private final Counter pushItemsSkipped;
+    private final Timer pushTimer;
+
     public SyncPushService(ChangeLogRepository changeLogRepository,
                            StockRepository stockRepository,
                            CentralSyncClient centralSyncClient,
                            @Value("${store.sync.maxRetries:3}") int maxRetries,
-                           @Value("${store.sync.initialBackoffMs:200}") long initialBackoffMs) {
+                           @Value("${store.sync.initialBackoffMs:200}") long initialBackoffMs,
+                           MeterRegistry meterRegistry) {
         this.changeLogRepository = changeLogRepository;
         this.stockRepository = stockRepository;
         this.centralSyncClient = centralSyncClient;
         this.maxRetries = maxRetries;
         this.initialBackoffMs = initialBackoffMs;
+        this.meterRegistry = meterRegistry;
+        this.pushAttempts = Counter.builder("inventory_sync_push_attempts_total").register(meterRegistry);
+        this.pushSuccess = Counter.builder("inventory_sync_push_success_total").register(meterRegistry);
+        this.pushFailed = Counter.builder("inventory_sync_push_failed_total").register(meterRegistry);
+        this.pushItemsApplied = Counter.builder("inventory_sync_push_items_applied_total").register(meterRegistry);
+        this.pushItemsSkipped = Counter.builder("inventory_sync_push_items_skipped_total").register(meterRegistry);
+        this.pushTimer = Timer.builder("inventory_sync_push_duration_seconds").publishPercentileHistogram(true).register(meterRegistry);
     }
 
     public SyncBatchDTO buildBatchSinceLastPush() {
@@ -67,6 +85,8 @@ public class SyncPushService {
 
     public SyncResultDTO pushNow() {
         long start = System.currentTimeMillis();
+        pushAttempts.increment();
+        Timer.Sample sample = Timer.start(meterRegistry);
         SyncBatchDTO batch = buildBatchSinceLastPush();
         String traceId = MDC.get("traceId");
         int toPush = batch.getItems() == null ? 0 : batch.getItems().size();
@@ -86,11 +106,17 @@ public class SyncPushService {
                 long duration = System.currentTimeMillis() - start;
                 log.info("[traceId={}] sync push ok: received={} applied={} skipped={} durationMs={}",
                         traceId, result.getReceived(), result.getApplied(), result.getSkipped(), duration);
+                pushSuccess.increment();
+                pushItemsApplied.increment(result.getApplied());
+                pushItemsSkipped.increment(result.getSkipped());
+                sample.stop(pushTimer);
                 return result;
             } catch (SyncNetworkException ex) {
                 if (attempt >= maxRetries) {
                     long duration = System.currentTimeMillis() - start;
                     log.error("[traceId={}] sync push error final: intentos={} durationMs={} causa={}", traceId, attempt, duration, ex.getMessage());
+                    pushFailed.increment();
+                    sample.stop(pushTimer);
                     throw ex;
                 }
                 long sleepMs = initialBackoffMs * attempt;
