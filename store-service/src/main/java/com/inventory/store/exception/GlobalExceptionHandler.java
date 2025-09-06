@@ -24,6 +24,11 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request, "BAD_REQUEST");
 	}
 
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<Map<String, Object>> handleBusinessBadRequest(BadRequestException ex, HttpServletRequest request) {
+		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request, "BAD_REQUEST");
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Map<String, Object>> handleOther(Exception ex, HttpServletRequest request) {
 		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request, "INTERNAL");

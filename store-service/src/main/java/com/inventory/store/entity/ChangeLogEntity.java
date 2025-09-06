@@ -3,34 +3,37 @@ package com.inventory.store.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
+/**
+ * Outbox mínimo para sincronización tienda→central
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "stock")
-public class StockEntity {
+@Table(name = "change_log", indexes = {
+		@Index(name = "idx_change_log_updated_at", columnList = "updated_at")
+})
+public class ChangeLogEntity {
 	@Id
-	@Column(name = "product_id", nullable = false, updatable = false, length = 64)
-	private String productId;
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
-	@Column(name = "quantity", nullable = false)
-	private int quantity;
+	@Column(name = "product_id", nullable = false, length = 64)
+	private String productId;
 
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
-
-	@Version
-	@Column(name = "version")
-	private Integer version;
 }
+
 

@@ -35,3 +35,20 @@ curl -s -H "X-Trace-Id: demo-123" http://localhost:8081/products
 curl -s -H "X-Trace-Id: demo-123" http://localhost:8081/stock/ABC-001
 ```
 
+## Iteración 2 - Escrituras y concurrencia local
+
+- Endpoint: `POST /stock/adjust` aplica un `delta` (+/-) al stock de un producto y devuelve `StockSnapshotDTO`.
+- Consistencia local: `@Version` en `StockEntity` para bloqueo optimista. Se reintenta hasta 3 veces con backoff simple (50ms, 100ms, 150ms) ante `OptimisticLockException`.
+- Resolución de conflictos: última escritura gana por `updatedAt` (LWW) a nivel local.
+- Outbox mínimo: tabla `change_log` con `{id, productId, updatedAt}` para futura sincronización tienda→central.
+
+### Curl de validación (Iteración 2)
+```bash
+curl -X POST http://localhost:8081/stock/adjust -H "Content-Type: application/json" -d '{"productId":"ABC-001","delta":5}'
+curl -X POST http://localhost:8081/stock/adjust -H "Content-Type: application/json" -d '{"productId":"ABC-001","delta":-3}'
+curl -X POST http://localhost:8081/stock/adjust -H "Content-Type: application/json" -d '{"productId":"ABC-001","delta":-999}'
+curl -X POST http://localhost:8081/stock/adjust -H "Content-Type: application/json" -d '{"productId":"NOPE-999","delta":1}'
+```
+
+Alcance: no se implementa todavía la sincronización con el servicio central ni endpoints de lectura de `change_log`. Las pruebas se agregan en una iteración posterior.
+
