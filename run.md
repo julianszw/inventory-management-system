@@ -34,9 +34,9 @@ cd central-service; .\mvnw spring-boot:run
 ```
 
 > **Maven Wrapper (mvnw)**
-> - Si el proyecto no incluye `mvnw`/`.mvn/`, podés:
->   - Usar Maven global: `mvn spring-boot:run`
->   - O generar el wrapper: `mvn -N wrapper:wrapper` (crea `mvnw`, `mvnw.cmd` y la carpeta `.mvn/`).
+> - If the project does not include `mvnw`/`.mvn/`, you can:
+>   - Use global Maven: `mvn spring-boot:run`
+>   - Or generate the wrapper: `mvn -N wrapper:wrapper` (creates `mvnw`, `mvnw.cmd` and the `.mvn/` folder).
 
 PowerShell:
 ```powershell
@@ -172,17 +172,17 @@ curl.exe -s -X POST http://localhost:8081/sync/push
 
 ## Troubleshooting
 - **Error: release version 21 not supported**
-  - Asegurarse de tener JDK 21 (`java -version` debe mostrar 21).
-  - Verificar que Maven use Java 21 (`mvn -v` → Java version: 21.x).
-  - Revisar los POMs (en cada servicio):
+  - Ensure you have JDK 21 (`java -version` should show 21).
+  - Verify Maven uses JDK 21 (`mvn -v` → Java version: 21.x).
+  - Check the POMs (in each service):
     ```xml
     <properties>
       <java.version>21</java.version>
       <maven.compiler.release>21</maven.compiler.release>
     </properties>
     ```
-  - Si aparece `<source>`/`<target>` con otra versión, eliminarlos o poner 21 (preferimos `release`).
-  - (Opcional) Enforcer:
+  - If `<source>`/`<target>` appear with another version, remove them or set to 21 (we prefer `release`).
+  - (Optional) Enforcer:
     ```xml
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
