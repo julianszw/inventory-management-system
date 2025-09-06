@@ -211,6 +211,24 @@ curl.exe -s -X POST http://localhost:8081/sync/push
 - H2 Console access
   - Visit `/h2` on each service and use the JDBC URLs above. If schema is empty, ensure the service has started with `ddl-auto: create` and initial loaders ran.
 
+## Run with Docker (optional)
+Docker is optional; you can still run with Maven as shown above.
+
+Build and start
+```bash
+docker compose build
+docker compose up -d
+```
+
+Follow logs for the store-service
+```bash
+docker compose logs -f store
+```
+
+H2 Consoles
+- Store H2: `http://localhost:8081/h2`
+- Central H2: `http://localhost:8080/h2`
+
 
 
 **⚠️ Important:** this project uses **in-memory databases**, not file-based.  

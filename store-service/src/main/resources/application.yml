@@ -23,7 +23,7 @@ logging:
 
 store:
   sync:
-    centralBaseUrl: http://localhost:8080
+    centralBaseUrl: ${STORE_SYNC_CENTRAL_BASE_URL:http://localhost:8080}
     enabled: true
     fixedDelayMs: 900000
     maxRetries: 3

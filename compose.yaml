@@ -1,0 +1,34 @@
+services:
+  central:
+    build:
+      context: ./central-service
+    container_name: central-service
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  store:
+    build:
+      context: ./store-service
+    container_name: store-service
+    ports:
+      - "8081:8081"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - STORE_SYNC_CENTRAL_BASE_URL=http://central:8080
+    depends_on:
+      central:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
