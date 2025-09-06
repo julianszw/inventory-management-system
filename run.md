@@ -33,6 +33,20 @@ PowerShell on Windows:
 cd central-service; .\mvnw spring-boot:run
 ```
 
+> **Maven Wrapper (mvnw)**
+> - Si el proyecto no incluye `mvnw`/`.mvn/`, podés:
+>   - Usar Maven global: `mvn spring-boot:run`
+>   - O generar el wrapper: `mvn -N wrapper:wrapper` (crea `mvnw`, `mvnw.cmd` y la carpeta `.mvn/`).
+
+PowerShell:
+```powershell
+mvn spring-boot:run
+```
+Bash:
+```bash
+mvn spring-boot:run
+```
+
 ### Option B: Run packaged JARs
 Build once from the repo root, then run each service.
 
@@ -157,6 +171,35 @@ curl.exe -s -X POST http://localhost:8081/sync/push
 - Network retries with backoff for sync push
 
 ## Troubleshooting
+- **Error: release version 21 not supported**
+  - Asegurarse de tener JDK 21 (`java -version` debe mostrar 21).
+  - Verificar que Maven use Java 21 (`mvn -v` → Java version: 21.x).
+  - Revisar los POMs (en cada servicio):
+    ```xml
+    <properties>
+      <java.version>21</java.version>
+      <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+    ```
+  - Si aparece `<source>`/`<target>` con otra versión, eliminarlos o poner 21 (preferimos `release`).
+  - (Opcional) Enforcer:
+    ```xml
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-enforcer-plugin</artifactId>
+      <version>3.4.1</version>
+      <executions>
+        <execution>
+          <id>enforce-java</id>
+          <goals><goal>enforce</goal></goals>
+          <configuration>
+            <rules><requireJavaVersion><version>[21,)</version></requireJavaVersion></rules>
+            <fail>true</fail>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+    ```
 - Port already in use
   - Change server port in the corresponding `application.yml` (`server.port`), or stop the process using the port.
 - PowerShell curl alias issues
@@ -167,3 +210,25 @@ curl.exe -s -X POST http://localhost:8081/sync/push
   - Verify outbox `change_log` has entries before push; it clears after a successful push.
 - H2 Console access
   - Visit `/h2` on each service and use the JDBC URLs above. If schema is empty, ensure the service has started with `ddl-auto: create` and initial loaders ran.
+
+
+
+**⚠️ Important:** this project uses **in-memory databases**, not file-based.
+When logging into the H2 Console:
+
+- **Store (http://localhost:8081/h2)**  
+  JDBC URL:
+  ```
+  jdbc:h2:mem:storedb
+  ```
+
+- **Central (http://localhost:8080/h2)**  
+  JDBC URL:
+  ```
+  jdbc:h2:mem:centraldb
+  ```
+
+- **User Name:** `sa`  
+- **Password:** *(leave empty)*
+
+If you try to connect using `jdbc:h2:file:...`, it will fail because no file-based DB exists.
