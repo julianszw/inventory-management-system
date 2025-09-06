@@ -213,8 +213,8 @@ curl.exe -s -X POST http://localhost:8081/sync/push
 
 
 
-**⚠️ Important:** this project uses **in-memory databases**, not file-based.
-When logging into the H2 Console:
+**⚠️ Important:** this project uses **in-memory databases**, not file-based.  
+When connecting in the H2 Console, use the following settings:
 
 - **Store (http://localhost:8081/h2)**  
   JDBC URL:
@@ -231,4 +231,4 @@ When logging into the H2 Console:
 - **User Name:** `sa`  
 - **Password:** *(leave empty)*
 
-If you try to connect using `jdbc:h2:file:...`, it will fail because no file-based DB exists.
+If you try to connect using `jdbc:h2:file:...`, it will fail because no file-based database exists.
