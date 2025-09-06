@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.Clock;
 import java.util.UUID;
 
 @Service
@@ -24,10 +25,12 @@ public class StockService {
 
 	private final StockRepository stockRepository;
 	private final ChangeLogRepository changeLogRepository;
+	private final Clock clock;
 
-	public StockService(StockRepository stockRepository, ChangeLogRepository changeLogRepository) {
+	public StockService(StockRepository stockRepository, ChangeLogRepository changeLogRepository, Clock clock) {
 		this.stockRepository = stockRepository;
 		this.changeLogRepository = changeLogRepository;
+		this.clock = clock;
 	}
 
 	public StockSnapshotDTO getSnapshot(String productId) {
@@ -80,7 +83,7 @@ public class StockService {
 			throw new BadRequestException("El stock resultante no puede ser negativo");
 		}
 
-		Instant now = Instant.now();
+		Instant now = clock.instant();
 		stock.setQuantity(newQty);
 		stock.setUpdatedAt(now);
 		stockRepository.saveAndFlush(stock);
