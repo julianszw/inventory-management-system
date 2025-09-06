@@ -16,7 +16,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = { ProductController.class })
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import com.example.centralservice.CentralServiceApplication;
+import org.springframework.context.annotation.Import;
+import com.inventory.central.exception.GlobalExceptionHandler;
+
+@SpringBootTest(classes = CentralServiceApplication.class)
+@AutoConfigureMockMvc
+@Import(GlobalExceptionHandler.class)
 class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;

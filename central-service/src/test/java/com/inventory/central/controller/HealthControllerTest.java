@@ -8,7 +8,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = { HealthController.class })
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import com.example.centralservice.CentralServiceApplication;
+
+@SpringBootTest(classes = CentralServiceApplication.class)
+@AutoConfigureMockMvc
 class HealthControllerTest {
     @Autowired
     private MockMvc mockMvc;

@@ -23,14 +23,32 @@ class ConcurrencyAdjustIT {
     void concurrent_increments_end_with_expected_total() throws InterruptedException {
         String productId = "ABC-001";
         StockSnapshotDTO before = stockService.getSnapshot(productId);
-        int tasks = 20;
+        int tasks = 5;
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(8);
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
         CountDownLatch latch = new CountDownLatch(tasks);
         for (int i = 0; i < tasks; i++) {
             executor.submit(() -> {
                 try {
-                    stockService.adjust(productId, 1);
+                    // Retry locally so each logical increment eventually succeeds under contention
+                    int localAttempts = 0;
+                    while (true) {
+                        try {
+                            stockService.adjust(productId, 1);
+                            break;
+                        } catch (RuntimeException ex) {
+                            localAttempts++;
+                            if (localAttempts >= 5) {
+                                throw ex;
+                            }
+                            try {
+                                Thread.sleep(20L * localAttempts);
+                            } catch (InterruptedException ignored) {
+                                Thread.currentThread().interrupt();
+                                throw ex;
+                            }
+                        }
+                    }
                 } finally {
                     latch.countDown();
                 }

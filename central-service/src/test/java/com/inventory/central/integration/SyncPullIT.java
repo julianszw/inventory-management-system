@@ -9,6 +9,7 @@ import com.inventory.central.service.SyncService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import com.example.centralservice.CentralServiceApplication;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(classes = CentralServiceApplication.class)
 @Transactional
 class SyncPullIT {
 
