@@ -36,7 +36,7 @@ It demonstrates how multiple **store services** synchronize stock data with a **
 
 ## ⚙️ Technology Stack
 - Java 21
-- Spring Boot 3.3
+- Spring Boot 3.5.5
 - Spring Data JPA + H2 in-memory DB
 - Spring Boot Actuator + Micrometer (metrics)
 - Lombok
