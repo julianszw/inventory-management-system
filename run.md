@@ -4,6 +4,8 @@ A distributed system composed of two independent Spring Boot applications:
 - store-service (port 8081): local store inventory with reads, atomic stock writes with optimistic locking, change outbox, periodic/manual sync push to central, reservation-based flow (allocate/commit/release) with idempotency, and Micrometer metrics.
 - central-service (port 8080): central aggregator exposing reads and accepting sync pull batches using Last-Write-Wins (LWW) conflict resolution, with Micrometer metrics.
 
+Repository: [github.com/julianszw/inventory-management-system](https://github.com/julianszw/inventory-management-system)
+
 ## Requirements
 - Java 21 (JDK 21)
 - Maven 3.9+

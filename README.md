@@ -152,6 +152,10 @@ Documentation assets live under the `docs/` folder (design, prompts, technical s
 - [technical_strategy.md](./docs/technical_strategy.md) — Technology stack choices, rationale, trade-offs, and tooling strategy
 - [design.md](./docs/design.md) — High-level design and project plan (architecture, trade-offs, latency strategy, security, observability, roadmap)
 
+## Repository
+
+The project is also available on GitHub: [github.com/julianszw/inventory-management-system](https://github.com/julianszw/inventory-management-system)
+
 ## Postman
 
 The Postman collection and environment are provided in the project root:

@@ -62,3 +62,6 @@
 - Streaming/event-driven, idempotency, reconciliation job.
 - Separate product catalog.
 - Security hardening and observable SLOs.
+
+## Repository
+- GitHub: [github.com/julianszw/inventory-management-system](https://github.com/julianszw/inventory-management-system)
