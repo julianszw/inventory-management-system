@@ -140,6 +140,8 @@ mvn -q test
 ## 📂 Additional Files
 - [run.md](./run.md) — Detailed run instructions and troubleshooting
 - [prompts.md](./prompts.md) — Full prompts used in Cursor to generate this project
+- [genai_workflow.md](./genai_workflow.md) — How GenAI tools (ChatGPT/Cursor) were used in design and implementation
+- [technical_strategy.md](./technical_strategy.md) — Technology stack choices, rationale, trade-offs, and tooling strategy
 
 ## Postman
 

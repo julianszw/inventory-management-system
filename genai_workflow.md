@@ -51,14 +51,3 @@ The Minimum Viable Product (MVP) aimed to:
 
 The MVP balanced **completeness** (covering the requirements of the assignment) and **simplicity** (H2 in-memory database, no external dependencies).
 
----
-
-## 5. Outcome
-By combining ChatGPT and Cursor:
-- Development was faster and iterative, without losing understanding of the code.  
-- Documentation (`README.md`, `run.md`, `prompts.md`, Postman collection) was generated alongside the code.  
-- The final MVP demonstrates both **technical soundness** (architecture, concurrency, observability) and **modern development practices** (GenAI-assisted coding, containerization, automated testing).  
-
----
-
-📌 *This workflow shows how GenAI can be integrated responsibly into software projects: ChatGPT for reasoning and planning, Cursor for code generation and integration, and the developer in full control of the iterative process.*  
