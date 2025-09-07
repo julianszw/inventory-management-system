@@ -140,6 +140,7 @@ mvn -q test
 ---
 
 ## 📂 Additional Files
+Documentation assets live under the `docs/` folder (design, prompts, technical strategy, GenAI workflow).
 - [run.md](./run.md) — Detailed run instructions and troubleshooting
 - [prompts.md](./docs/prompts.md) — Full prompts used in Cursor to generate this project
 - [genai_workflow.md](./docs/genai_workflow.md) — How GenAI tools (ChatGPT/Cursor) were used in design and implementation
