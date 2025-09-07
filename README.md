@@ -141,10 +141,10 @@ mvn -q test
 
 ## 📂 Additional Files
 - [run.md](./run.md) — Detailed run instructions and troubleshooting
-- [prompts.md](./prompts.md) — Full prompts used in Cursor to generate this project
-- [genai_workflow.md](./genai_workflow.md) — How GenAI tools (ChatGPT/Cursor) were used in design and implementation
-- [technical_strategy.md](./technical_strategy.md) — Technology stack choices, rationale, trade-offs, and tooling strategy
-- [design.md](./design.md) — High-level design and project plan (architecture, trade-offs, latency strategy, security, observability, roadmap)
+- [prompts.md](./docs/prompts.md) — Full prompts used in Cursor to generate this project
+- [genai_workflow.md](./docs/genai_workflow.md) — How GenAI tools (ChatGPT/Cursor) were used in design and implementation
+- [technical_strategy.md](./docs/technical_strategy.md) — Technology stack choices, rationale, trade-offs, and tooling strategy
+- [design.md](./docs/design.md) — High-level design and project plan (architecture, trade-offs, latency strategy, security, observability, roadmap)
 
 ## Postman
 
