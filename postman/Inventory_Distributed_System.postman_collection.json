@@ -1,0 +1,287 @@
+{
+  "info": {
+    "name": "Inventory Distributed System",
+    "_postman_id": "e3b1c442-98fc-1fc0-85fa-7fcf4b3c0c8a",
+    "description": "All endpoints for store-service (8081) and central-service (8080). Uses variables: {{baseUrlStore}}, {{baseUrlCentral}}, {{productId}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrlStore",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "baseUrlCentral",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "productId",
+      "value": "ABC-001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Store Service",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/health"
+          }
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/products"
+          }
+        },
+        {
+          "name": "Get Stock by Product",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/stock/{{productId}}"
+          }
+        },
+        {
+          "name": "Adjust Stock (+5)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"delta\": 5\n}"
+            },
+            "url": "{{baseUrlStore}}/stock/adjust"
+          }
+        },
+        {
+          "name": "Adjust Stock (-3)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"delta\": -3\n}"
+            },
+            "url": "{{baseUrlStore}}/stock/adjust"
+          }
+        },
+        {
+          "name": "Adjust Stock (invalid: negative result)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"delta\": -9999\n}"
+            },
+            "url": "{{baseUrlStore}}/stock/adjust"
+          }
+        },
+        {
+          "name": "Adjust Stock (nonexistent product)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"NOPE-999\",\n  \"delta\": 1\n}"
+            },
+            "url": "{{baseUrlStore}}/stock/adjust"
+          }
+        },
+        {
+          "name": "Manual Sync Push (store -> central)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrlStore}}/sync/push"
+          }
+        },
+        {
+          "name": "Actuator: Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/health"
+          }
+        },
+        {
+          "name": "Actuator: Metrics (index)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics"
+          }
+        },
+        {
+          "name": "Metric: inventory_stock_adjust_attempts_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_stock_adjust_attempts_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_stock_adjust_success_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_stock_adjust_success_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_stock_adjust_failed_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_stock_adjust_failed_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_attempts_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_attempts_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_success_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_success_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_failed_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_failed_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_items_applied_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_items_applied_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_items_skipped_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_items_skipped_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_push_duration_seconds",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlStore}}/actuator/metrics/inventory_sync_push_duration_seconds"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Central Service",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/health"
+          }
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/products"
+          }
+        },
+        {
+          "name": "Get Stock by Product",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/stock/{{productId}}"
+          }
+        },
+        {
+          "name": "Sync Pull (manual body)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 12,\n      \"updatedAt\": \"2099-01-01T00:00:00Z\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrlCentral}}/sync/pull"
+          }
+        },
+        {
+          "name": "Actuator: Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/health"
+          }
+        },
+        {
+          "name": "Actuator: Metrics (index)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/metrics"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_pull_received_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/metrics/inventory_sync_pull_received_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_pull_applied_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/metrics/inventory_sync_pull_applied_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_pull_skipped_total",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/metrics/inventory_sync_pull_skipped_total"
+          }
+        },
+        {
+          "name": "Metric: inventory_sync_pull_duration_seconds",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrlCentral}}/actuator/metrics/inventory_sync_pull_duration_seconds"
+          }
+        }
+      ]
+    }
+  ]
+}

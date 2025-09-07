@@ -138,3 +138,16 @@ mvn -q test
 ## 📂 Additional Files
 - [run.md](./run.md) — Detailed run instructions and troubleshooting
 - [prompts.md](./prompts.md) — Full prompts used in Cursor to generate this project
+
+## Postman
+
+The Postman collection and environment are provided in the project root:
+
+- `Inventory_Distributed_System.postman_collection.json`
+- `Inventory_Local.postman_environment.json`
+
+### Usage
+1. Open Postman
+2. Import both files (File → Import)
+3. Select the environment `Inventory Local` in the top right corner
+4. Run the requests (health, stock adjust, sync, metrics) directly
