@@ -18,6 +18,8 @@
 - **H2 In-Memory:** Minimizes ops cost and complexity for a challenge/MVP while keeping SQL semantics.
 - **Modular Services:** `store-service` and `central-service` make data flows explicit and testable.
 
+Latency & Cost note: This MVP reduces coordination latency by allowing local writes (AP) and batching/periodic sync; costs are kept low with H2 and optional Docker (no external infra). See `design.md` for detailed latency strategy and AP vs CP trade-offs.
+
 ## Integration of GenAI and Modern Tooling
 - **ChatGPT (design partner):**
   - Explored architecture options (consistency vs availability, sync cadence, conflict resolution).

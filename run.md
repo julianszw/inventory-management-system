@@ -229,6 +229,12 @@ H2 Consoles
 - Store H2: `http://localhost:8081/h2`
 - Central H2: `http://localhost:8080/h2`
 
+Environment & Metrics
+- The store container receives `STORE_SYNC_CENTRAL_BASE_URL=http://central:8080` via Compose (already set in `compose.yaml`).
+- Actuator metrics endpoints are exposed inside each container and published on host ports:
+  - Store metrics: `http://localhost:8081/actuator/metrics`
+  - Central metrics: `http://localhost:8080/actuator/metrics`
+
 
 
 **⚠️ Important:** this project uses **in-memory databases**, not file-based.  

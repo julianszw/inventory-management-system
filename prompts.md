@@ -30,11 +30,11 @@ src/main/java/com/inventory/store/
 
 ### Configuration (application.yml)
 ```yaml
-server:
-  port: 8081
-spring:
-  datasource:
-    url: jdbc:h2:mem:storedb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+  server:
+    port: 8081
+  spring:
+    datasource:
+      url: jdbc:h2:mem:storedb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     username: sa
     password:
   jpa:
@@ -203,21 +203,21 @@ Add test suite for central-service.
 Add metrics to both services.
 
 ### store-service
-- inventory_stock_adjust_attempts_total
-- inventory_stock_adjust_success_total
-- inventory_stock_adjust_failed_total
+  - inventory_stock_adjust_attempts_total
+  - inventory_stock_adjust_success_total
+  - inventory_stock_adjust_failed_total
 - inventory_stock_adjust_duration_seconds
-- inventory_sync_push_attempts_total
-- inventory_sync_push_success_total
-- inventory_sync_push_failed_total
-- inventory_sync_push_items_applied_total
-- inventory_sync_push_items_skipped_total
+  - inventory_sync_push_attempts_total
+  - inventory_sync_push_success_total
+  - inventory_sync_push_failed_total
+  - inventory_sync_push_items_applied_total
+  - inventory_sync_push_items_skipped_total
 - inventory_sync_push_duration_seconds
 
 ### central-service
-- inventory_sync_pull_received_total
-- inventory_sync_pull_applied_total
-- inventory_sync_pull_skipped_total
+  - inventory_sync_pull_received_total
+  - inventory_sync_pull_applied_total
+  - inventory_sync_pull_skipped_total
 - inventory_sync_pull_duration_seconds
 
 ### Actuator

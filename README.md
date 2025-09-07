@@ -106,6 +106,8 @@ Invoke-RestMethod http://localhost:8081/products
 Invoke-RestMethod http://localhost:8080/products
 ```
 
+Postman collection: import `Inventory_Distributed_System.postman_collection.json` and `Inventory_Local.postman_environment.json` from the project root. Optionally send the `X-Trace-Id` header to correlate logs.
+
 ---
 
 ## 🧪 Testing
@@ -142,6 +144,7 @@ mvn -q test
 - [prompts.md](./prompts.md) — Full prompts used in Cursor to generate this project
 - [genai_workflow.md](./genai_workflow.md) — How GenAI tools (ChatGPT/Cursor) were used in design and implementation
 - [technical_strategy.md](./technical_strategy.md) — Technology stack choices, rationale, trade-offs, and tooling strategy
+- [design.md](./design.md) — High-level design and project plan (architecture, trade-offs, latency strategy, security, observability, roadmap)
 
 ## Postman
 
