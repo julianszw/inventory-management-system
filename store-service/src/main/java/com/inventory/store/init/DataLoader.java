@@ -47,9 +47,9 @@ public class DataLoader {
 		productRepository.save(p2);
 		productRepository.save(p3);
 
-		stockRepository.save(StockEntity.builder().productId("ABC-001").quantity(12).updatedAt(now).build());
-		stockRepository.save(StockEntity.builder().productId("ABC-002").quantity(30).updatedAt(now).build());
-		stockRepository.save(StockEntity.builder().productId("ABC-003").quantity(20).updatedAt(now).build());
+		stockRepository.save(StockEntity.builder().productId("ABC-001").onHand(12).allocated(0).updatedAt(now).build());
+		stockRepository.save(StockEntity.builder().productId("ABC-002").onHand(30).allocated(0).updatedAt(now).build());
+		stockRepository.save(StockEntity.builder().productId("ABC-003").onHand(20).allocated(0).updatedAt(now).build());
 	}
 }
 

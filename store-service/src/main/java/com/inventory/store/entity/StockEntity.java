@@ -23,8 +23,11 @@ public class StockEntity {
 	@Column(name = "product_id", nullable = false, updatable = false, length = 64)
 	private String productId;
 
-	@Column(name = "quantity", nullable = false)
-	private int quantity;
+	@Column(name = "on_hand", nullable = false)
+	private int onHand;
+
+	@Column(name = "allocated", nullable = false)
+	private int allocated;
 
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;

@@ -14,15 +14,16 @@ It demonstrates how multiple **store services** synchronize stock data with a **
 |   (port 8081)     |   <----------------------------------------- |   (port 8080)     |
 |                   |          Pull response (applied/skipped)     |                   |
 +-------------------+                                              +-------------------+
-         |                                                                 |
-         |  Local adjustments (/stock/adjust)                              | 
-         |  with optimistic locking and change log                         |
-         v                                                                 v
-  H2 in-memory DB                                                  H2 in-memory DB
+        |                                                                 |
+        |  Local adjustments (/stock/adjust) and reservations             | 
+        |  (/stock/allocate | /stock/commit | /stock/release)             |
+        |  with optimistic locking, idempotency, and change log           |
+        v                                                                 v
+ H2 in-memory DB                                                  H2 in-memory DB
 ```
 
 - **store-service**
-  - Exposes endpoints to read products and adjust stock.
+  - Exposes endpoints to read products, adjust stock, and manage reservations.
   - Keeps an outbox (`change_log`) of changes.
   - Pushes changes periodically (scheduler) or manually to the central service.
   - Retries on DB lock conflicts (optimistic locking) and on network failures.
@@ -51,6 +52,9 @@ It demonstrates how multiple **store services** synchronize stock data with a **
 - `GET /products`
 - `GET /stock/{productId}`
 - `POST /stock/adjust`
+- `POST /stock/allocate` (optional header `Idempotency-Key`)
+- `POST /stock/commit`
+- `POST /stock/release`
 - `POST /sync/push`
 
 ### central-service (port 8080)
@@ -106,7 +110,7 @@ Invoke-RestMethod http://localhost:8081/products
 Invoke-RestMethod http://localhost:8080/products
 ```
 
-Postman collection: import `Inventory_Distributed_System.postman_collection.json` and `Inventory_Local.postman_environment.json` from the project root. Optionally send the `X-Trace-Id` header to correlate logs.
+Postman collection: import `postman/Inventory_Distributed_System.postman_collection.json` and `postman/Inventory_Local.postman_environment.json`. Optionally send the `X-Trace-Id` header to correlate logs. For allocations, you can also send `Idempotency-Key`.
 
 ---
 
@@ -116,6 +120,7 @@ Postman collection: import `Inventory_Distributed_System.postman_collection.json
   - Unit tests for `StockService`
   - Web tests for controllers (`/health`, `/products`, `/stock`)
   - Concurrency integration test (multiple adjust calls in parallel)
+  - Allocation flow tests: allocate→commit, allocate→release, and validation errors
 
 - **central-service**
   - Unit tests for `SyncService` (LWW: applied, skipped, created, equal timestamps)
@@ -158,4 +163,4 @@ The Postman collection and environment are provided in the project root:
 1. Open Postman
 2. Import both files (File → Import)
 3. Select the environment `Inventory Local` in the top right corner
-4. Run the requests (health, stock adjust, sync, metrics) directly
+4. Run the requests (health, stock adjust, reservation, sync, metrics) directly

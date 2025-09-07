@@ -1,7 +1,7 @@
 # Inventory Management System – Run Guide
 
 A distributed system composed of two independent Spring Boot applications:
-- store-service (port 8081): local store inventory with reads, atomic stock writes with optimistic locking, change outbox, periodic/manual sync push to central, and Micrometer metrics.
+- store-service (port 8081): local store inventory with reads, atomic stock writes with optimistic locking, change outbox, periodic/manual sync push to central, reservation-based flow (allocate/commit/release) with idempotency, and Micrometer metrics.
 - central-service (port 8080): central aggregator exposing reads and accepting sync pull batches using Last-Write-Wins (LWW) conflict resolution, with Micrometer metrics.
 
 ## Requirements
@@ -86,13 +86,9 @@ java -jar central-service/target/central-service-0.0.1-SNAPSHOT.jar
 - GET `/products`
 - GET `/stock/{productId}`
 - POST `/stock/adjust`
-  - Example body:
-```json
-{
-  "productId": "ABC-001",
-  "delta": 5
-}
-```
+- POST `/stock/allocate` (optional header `Idempotency-Key`)
+- POST `/stock/commit`
+- POST `/stock/release`
 - POST `/sync/push` (push local changes to central)
 
 ### central-service (8080)
@@ -125,10 +121,22 @@ Invoke-RestMethod -Uri http://localhost:8081/stock/adjust -Method Post -ContentT
 # Push to central
 Invoke-RestMethod -Uri http://localhost:8081/sync/push -Method Post
 ```
+Reservation flow
+```powershell
+# Allocate 2 units with idempotency key
+Invoke-RestMethod -Uri http://localhost:8081/stock/allocate -Method Post -ContentType "application/json" -Headers @{"Idempotency-Key"="8f5e9f1d-8b7e-4d8e-a2c1-1f2a3b4c5d6e"} -Body '{"orderId":"ORD-1","productId":"ABC-001","quantity":2}'
+# Commit the reservation
+Invoke-RestMethod -Uri http://localhost:8081/stock/commit -Method Post -ContentType "application/json" -Body '{"orderId":"ORD-1","productId":"ABC-001","quantity":2}'
+# Or release
+Invoke-RestMethod -Uri http://localhost:8081/stock/release -Method Post -ContentType "application/json" -Body '{"orderId":"ORD-1","productId":"ABC-001","quantity":2}'
+```
 Alternative with curl.exe on Windows
 ```powershell
 curl.exe -s http://localhost:8081/health
 curl.exe -s -H "Content-Type: application/json" -d '{"productId":"ABC-001","delta":2}' http://localhost:8081/stock/adjust
+curl.exe -s -H "Content-Type: application/json" -H "Idempotency-Key: 11111111-2222-3333-4444-555555555555" -d '{"orderId":"ORD-1","productId":"ABC-001","quantity":1}' http://localhost:8081/stock/allocate
+curl.exe -s -H "Content-Type: application/json" -d '{"orderId":"ORD-1","productId":"ABC-001","quantity":1}' http://localhost:8081/stock/commit
+curl.exe -s -H "Content-Type: application/json" -d '{"orderId":"ORD-1","productId":"ABC-001","quantity":1}' http://localhost:8081/stock/release
 curl.exe -s -X POST http://localhost:8081/sync/push
 ```
 

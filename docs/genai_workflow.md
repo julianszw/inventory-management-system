@@ -26,7 +26,8 @@ Examples of iterations:
 - Prompt 1: Generate a minimal `store-service` with electronic/tech products and endpoints for health/products/stock.  
 - Prompt 2: Add optimistic locking and retries for stock adjustments.  
 - Prompt 3: Implement synchronization (push and pull) between store and central.  
-- Later prompts: Add observability (TraceId, Micrometer metrics), Docker support, Postman collections, and documentation (`run.md`, `prompts.md`).  
+- Later prompts: Add observability (TraceId, Micrometer metrics), Docker support, Postman collection, and documentation (`run.md`, `prompts.md`).  
+- New iteration: Add reservation flow (`allocate`/`commit`/`release`) with optional `Idempotency-Key`, tests, and updated Postman.
 
 ---
 
@@ -43,7 +44,7 @@ Cursor acted as the **execution engine**, while ChatGPT acted as the **design an
 ## 4. MVP Definition
 The Minimum Viable Product (MVP) aimed to:
 - Run two independent Spring Boot services (`store-service`, `central-service`).  
-- Support core inventory operations: product listing, stock queries, stock adjustments.  
+- Support core inventory operations: product listing, stock queries, stock adjustments, and reservation-based purchasing.  
 - Synchronize stock periodically and manually between store and central, using Last-Write-Wins.  
 - Ensure concurrency safety with optimistic locking and retries.  
 - Provide basic observability (logs, traceId, custom metrics with Micrometer).  

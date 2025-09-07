@@ -278,3 +278,33 @@ Finally, update run.md:
   docker compose logs -f store
 - Mention H2 Console URLs (http://localhost:8081/h2, http://localhost:8080/h2).
 - Explain that this is optional; Maven run still works.
+
+---
+
+## PROMPT 9 — store-service: Reservation-based flow (allocate/commit/release) + idempotency
+
+Implement a minimal purchase flow based on reservations in `store-service`, preserving LWW and optimistic locking.
+
+### Model
+- Extend `StockEntity` with `onHand:int`, `allocated:int`, `updatedAt:Instant`, and `@Version`.
+- Create `idempotency_request` table to persist `Idempotency-Key` uses.
+
+### Service
+- Add atomic operations with optimistic retries (or PESSIMISTIC_WRITE if aligned with existing code):
+  - `allocate(productId, orderId, quantity)` → rule: `onHand - allocated >= quantity`; effect: `allocated += quantity; updatedAt=now; change_log`.
+  - `commit(productId, orderId, quantity)` → effect: `onHand -= quantity; allocated -= quantity; updatedAt=now; change_log`.
+  - `release(productId, orderId, quantity)` → effect: `allocated -= quantity; updatedAt=now; change_log`.
+- Idempotency via optional `Idempotency-Key` header persisted in `idempotency_request`.
+
+### API
+- `POST /stock/allocate` (headers: `Idempotency-Key` optional)
+- `POST /stock/commit`
+- `POST /stock/release`
+
+### Testing
+- Unit tests for allocate/commit/release including validations and concurrency basics.
+- WebMvc tests for new endpoints.
+
+### Compatibility
+- Do not break existing `/stock/adjust` or `/sync/push`.
+- Ensure `change_log` records allocate/commit/release so central reflects via LWW.

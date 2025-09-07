@@ -15,6 +15,8 @@
 - **AP-first**: each store must accept operations without blocking on the central service.
 - **LWW**: simple and effective; assumes stores stamp events with `updatedAt`.
 - **Outbox/Change Log** in store → ensures later, retriable delivery.
+- **Reservations**: allocate→commit/release model to support basic order flows while keeping AP.
+- **Idempotency**: allocation supports optional `Idempotency-Key` for safe retries.
 - **Retries**: handle network/transient failures in push/pull.
 - **H2 in-memory**: low cost and fast for MVP (dev/test).
 
@@ -54,6 +56,7 @@
 ## Testing
 - Unit, web, integration (concurrency and LWW).
 - Stabilization in CI/IntelliJ.
+- New: reservation flow tests in store (`allocate`, `commit`, `release`).
 
 ## Roadmap (post-MVP)
 - Streaming/event-driven, idempotency, reconciliation job.

@@ -15,6 +15,8 @@
 ## Rationale & Trade-offs
 - **Eventual Consistency (AP-first):** Prioritize store availability; resolve conflicts with **Last-Write-Wins** (`updatedAt`).
 - **Optimistic Locking & Retries:** Favor throughput and simpler contention handling for inventory updates.
+- **Reservation Flow:** `allocate`/`commit`/`release` adds minimal order support without central coupling.
+- **Idempotency:** Optional `Idempotency-Key` on `allocate` to handle client/network retries safely.
 - **H2 In-Memory:** Minimizes ops cost and complexity for a challenge/MVP while keeping SQL semantics.
 - **Modular Services:** `store-service` and `central-service` make data flows explicit and testable.
 
@@ -22,7 +24,7 @@ Latency & Cost note: This MVP reduces coordination latency by allowing local wri
 
 ## Integration of GenAI and Modern Tooling
 - **ChatGPT (design partner):**
-  - Explored architecture options (consistency vs availability, sync cadence, conflict resolution).
+  - Explored architecture options (consistency vs availability, optimistic locking, synchronization cadence, metrics, tracing).  
   - Shaped API design and DTO boundaries; validated error handling and observability approach.
   - Iteratively refined long-form prompts to keep generation aligned with layered architecture.
 - **Cursor AI (coding assistant):**
@@ -33,7 +35,7 @@ Latency & Cost note: This MVP reduces coordination latency by allowing local wri
   - `genai_workflow.md` documents the process and governance.
 
 ## MVP Scope (what is intentionally included/excluded)
-- **Included:** core reads/writes, sync push/pull, LWW conflict handling, optimistic locking, metrics, tracing, H2 console, Postman, optional Docker.
+- **Included:** core reads/writes, reservation flow (allocate/commit/release), sync push/pull, LWW conflict handling, optimistic locking, metrics, tracing, H2 console, Postman, optional Docker.
 - **Excluded:** external databases, message brokers, auth, and multi-region deployment (out of scope for a concise MVP).
 
 ## How this improves efficiency

@@ -75,7 +75,7 @@ public class SyncPushService {
                 StockEntity st = maybe.get();
                 items.add(StockSnapshotDTO.builder()
                         .productId(st.getProductId())
-                        .quantity(st.getQuantity())
+                        .quantity(st.getOnHand())
                         .updatedAt(st.getUpdatedAt())
                         .build());
             }
