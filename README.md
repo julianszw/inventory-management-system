@@ -98,6 +98,8 @@ cd central-service
 mvn -q -DskipTests spring-boot:run
 ```
 
+Docker (optional): you can also run both services with Docker Compose. See the "Run with Docker" section in [run.md](./run.md) for `docker compose build` and `docker compose up -d` commands.
+
 Then test:
 ```bash
 Invoke-RestMethod http://localhost:8081/products
