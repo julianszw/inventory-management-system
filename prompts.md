@@ -223,3 +223,58 @@ Add metrics to both services.
 ### Actuator
 - Expose health, info, metrics, prometheus
 - Use MeterRegistry counters and timers in services
+
+---
+
+## PROMPT 8 — Docker & Docker Compose
+
+Add Docker support to this project so that both services (store-service and central-service) can run with Docker Compose.
+
+Tasks:
+
+1) Create a Dockerfile in store-service:
+   - Multi-stage build
+   - Stage 1: FROM maven:3.9.6-eclipse-temurin-21 as build
+     - Copy pom.xml, download deps
+     - Copy src, run mvn clean package -DskipTests
+   - Stage 2: FROM eclipse-temurin:21-jre
+     - Copy JAR from build
+     - EXPOSE 8081
+     - ENV JAVA_OPTS="-Xms256m -Xmx512m"
+     - ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar app.jar"]
+
+2) Create a Dockerfile in central-service:
+   - Same multi-stage structure
+   - Runtime container exposes port 8080
+
+3) Create a compose.yaml in project root:
+   - Service "central":
+     - build context: ./central-service
+     - container_name: central-service
+     - ports: "8080:8080"
+     - environment: JAVA_OPTS=-Xms256m -Xmx512m
+     - healthcheck using GET http://localhost:8080/health
+   - Service "store":
+     - build context: ./store-service
+     - container_name: store-service
+     - ports: "8081:8081"
+     - environment:
+       - JAVA_OPTS=-Xms256m -Xmx512m
+       - STORE_SYNC_CENTRAL_BASE_URL=http://central:8080
+     - depends_on: central with condition: service_healthy
+     - healthcheck using GET http://localhost:8081/health
+
+4) Update store-service application.yml so that:
+   store.sync.centralBaseUrl=${STORE_SYNC_CENTRAL_BASE_URL:http://localhost:8080}
+
+5) Do not remove Maven support; Docker should be optional.
+6) Do not change code logic, only add Dockerfiles, compose.yaml, and adjust config for centralBaseUrl mapping.
+
+Finally, update run.md:
+- Add a section "Run with Docker" at the end.
+- Document build and run:
+  docker compose build
+  docker compose up -d
+  docker compose logs -f store
+- Mention H2 Console URLs (http://localhost:8081/h2, http://localhost:8080/h2).
+- Explain that this is optional; Maven run still works.
